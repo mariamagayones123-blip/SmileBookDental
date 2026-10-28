@@ -97,6 +97,8 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            // Give up after 10 seconds instead of hanging on "Please wait..." when the database can't be reached.
+            'options' => [\PDO::ATTR_TIMEOUT => 10],
         ],
 
         'sqlsrv' => [

@@ -1,23 +1,21 @@
 <?php
 
-/*
-| Which websites may call this API from a browser.
-|
-| - Production: set CORS_ALLOWED_ORIGINS in .env to your frontend URL(s), comma-separated,
-|   e.g. CORS_ALLOWED_ORIGINS=https://smilebook.vercel.app
-| - Local development (APP_ENV=local): any http://localhost or http://127.0.0.1 port is allowed,
-|   so `npm run dev` works without extra setup.
-*/
 return [
     'paths' => ['api/*'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => array_values(array_filter(array_map('trim', explode(',', (string) env('CORS_ALLOWED_ORIGINS', ''))))),
+    // Comma-separated list in CORS_ALLOWED_ORIGINS. If empty, the SmileBook Vercel URL below is used.
+    'allowed_origins' => array_values(array_filter(array_map('trim', explode(',', (string) env(
+        'CORS_ALLOWED_ORIGINS',
+        'https://smile-book-dental.vercel.app'
+    ))))),
 
-    'allowed_origins_patterns' => env('APP_ENV') === 'local'
-        ? ['#^http://(localhost|127\.0\.0\.1)(:\d+)?$#']
-        : [],
+    // Vercel preview URLs of this project, plus localhost when APP_ENV=local.
+    'allowed_origins_patterns' => array_merge(
+        ['#^https://smile-book-dental(-[a-z0-9-]+)?\.vercel\.app$#'],
+        env('APP_ENV') === 'local' ? ['#^http://(localhost|127\.0\.0\.1)(:\d+)?$#'] : []
+    ),
 
     'allowed_headers' => ['*'],
 

@@ -1,6 +1,10 @@
 import axios from 'axios'
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api' })
+// 60s timeout: the free Render server can take ~50s to wake up, but it should never hang forever.
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  timeout: 60000,
+})
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
@@ -13,7 +17,14 @@ api.interceptors.request.use((config) => {
 export const errMsg = (e) => {
   const d = e.response?.data
   if (d?.errors) return Object.values(d.errors).flat().join(' ')
-  return d?.message || 'Something went wrong. Please try again.'
+  if (!e.response) {
+    // No reply from the server at all: asleep, down, wrong VITE_API_URL, or blocked by CORS.
+    return e.code === 'ECONNABORTED'
+      ? 'The server is taking too long to respond. Please wait a minute and try again.'
+      : 'Cannot reach the server. Check your internet, or wait a minute if the server is waking up, then try again.'
+  }
+  if (typeof d?.message === 'string' && d.message) return d.message
+  return `Server error (${e.response.status}). Please try again.`
 }
 
 // Local date as YYYY-MM-DD (avoids the UTC shift problem)

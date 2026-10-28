@@ -31,4 +31,7 @@ RUN mkdir -p \
 
 EXPOSE 10000
 
+# php artisan serve handles 1 request at a time by default; use 4 so one slow request does not block everyone.
+ENV PHP_CLI_SERVER_WORKERS=4
+
 CMD ["sh", "-c", "php artisan config:clear && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
