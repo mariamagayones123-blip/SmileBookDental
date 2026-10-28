@@ -14,6 +14,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middle
 // Public: anyone can view the dentists/schedule and services
 Route::get('/dentists', [CatalogController::class, 'dentists']);
 Route::get('/services', [CatalogController::class, 'services']);
+Route::get('/slots', [AppointmentController::class, 'slots']); // moved here: schedule is public
 Route::get('/reviews', [FeedbackController::class, 'reviews']);
 Route::post('/reviews', [FeedbackController::class, 'storeReview'])->middleware('throttle:8,1');
 Route::post('/contact', [FeedbackController::class, 'storeContact'])->middleware('throttle:8,1');
@@ -22,7 +23,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::get('/slots', [AppointmentController::class, 'slots']);
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::post('/appointments', [AppointmentController::class, 'store']);
     Route::put('/appointments/{appointment}', [AppointmentController::class, 'update']);
